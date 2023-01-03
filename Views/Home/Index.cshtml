@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">Cargar Excel</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <input class="form-control-file" type="file" id="inputExcel" />
+                    </div>
+                    <div class="cols-sm-4">
+                        <button class="btn btn-primary" onclick="mostrarDatos()">Mostrar Datos</button>
+                        <button class="btn btn-success" onclick="enviarDatosDB()">Guardar datos en base de datos</button>
+                    </div>
+                </div>
+                <hr />
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table id="tbData" class="table table-striped">
+                              <thead>
+                                  <tr>
+                                      <th>Nombre</th>
+                                      <th>Apellido</th>
+                                      <th>Teléfono</th>
+                                      <th>Email</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+
+                              </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function mostrarDatos() {
+            const inputExcel = document.getElementById('inputExcel');
+            const formData = new FormData();
+            formData.append("ArchivoExcel", inputExcel.files[0])
+            const resp = await fetch('@Url.Action("MostrarDatos", "Home")', {
+                method: 'POST', 
+                body: formData
+            }) 
+            const data = await resp.json()  
+            data.forEach((item) => {
+                $("#tbData tbody").append(
+                    $(`<tr>`).append(
+                        $(`<td>`).text(item.nombre),
+                        $(`<td>`).text(item.apellido),
+                        $(`<td>`).text(item.telefono),
+                        $(`<td>`).text(item.email)
+                    )
+                )
+            })
+            
+        }
+
+
+        async function enviarDatosDB() {
+            const inputExcel = document.getElementById('inputExcel');
+            const formData = new FormData();
+            formData.append("ArchivoExcel", inputExcel.files[0])
+            const resp = await fetch('@Url.Action("EnviarDatosDB", "Home")', {
+                method: 'POST',
+                body: formData
+            })
+            const data = await resp.json()
+            alert(data.mensaje);
+
+        }
+    </script>
+}
